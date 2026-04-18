@@ -2,6 +2,6 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/dormrp", "destination": "/api/index.js" },
-    { "source": "/(.*)", "destination": "/public/frontend/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/public/frontend/$1" }
   ]
 }
