@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="portfolio.css">
+    <style>
+        /* ── DARK MODE ── */
+        [data-theme="dark"] {
+            --primary-color: #8b7aff;
+            --primary-dark: #6E57FF;
+            --primary-light: #a899ff;
+            --secondary-color: #89bde0;
+            --text-primary: #f0f0ff;
+            --text-secondary: #d4ccff;
+            --text-light: #a8a8cc;
+            --bg-primary: #0e0b1a;
+            --bg-secondary: #13102a;
+            --bg-card: #1a1630;
+            --border-color: rgba(139, 122, 255, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] body {
+            background-color: #0e0b1a;
+            background-image:
+                radial-gradient(circle at var(--bg-mouse-x, 15%) var(--bg-mouse-y, 0%), rgba(139,122,255,0.15), transparent 55%),
+                radial-gradient(circle at 85% 120%, rgba(105,157,211,0.12), transparent 60%),
+                linear-gradient(135deg, #0e0b1a 0%, #13102a 45%, #0c1220 100%);
+        }
+
+        [data-theme="dark"] nav {
+            background: rgba(14, 11, 26, 0.88);
+            border-bottom-color: rgba(139,122,255,0.15);
+        }
+
+        [data-theme="dark"] .main-section {
+            background: rgba(255,255,255,0.04);
+        }
+
+        [data-theme="dark"] .about-sec,
+        [data-theme="dark"] .skill-sec,
+        [data-theme="dark"] .project-sec,
+        [data-theme="dark"] .certification-sec,
+        [data-theme="dark"] .contact-sec {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .skill-img {
+            background: var(--bg-secondary);
+        }
+
+        [data-theme="dark"] .skill-img:hover {
+            background: #1e1a38;
+        }
+
+        [data-theme="dark"] .projects > div {
+            background: var(--bg-secondary);
+        }
+
+        [data-theme="dark"] .projects > div:hover {
+            background: #1e1a38;
+        }
+
+        [data-theme="dark"] .certifications > div {
+            background: var(--bg-secondary);
+        }
+
+        [data-theme="dark"] #contactForm > input {
+            background: var(--bg-secondary);
+            color: inherit;
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .nav-links {
+            background: rgba(14,11,26,0.98);
+        }
+
+        [data-theme="dark"] .nav-links > li {
+            border-bottom-color: rgba(139,122,255,0.12);
+        }
+
+        /* ── THEME TOGGLE BUTTON ── */
+        .theme-toggle {
+            background: rgba(110,87,255,0.1);
+            border: 1.5px solid rgba(110,87,255,0.25);
+            border-radius: 50px;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(110,87,255,0.2);
+            border-color: rgba(110,87,255,0.5);
+            transform: scale(1.08);
+        }
+
+        .theme-icon {
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(20deg);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: rgba(139,122,255,0.15);
+            border-color: rgba(139,122,255,0.3);
+        }
+
+        /* ── LOADER ── */
+        #loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0a0812;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            transition: opacity 1s cubic-bezier(0.4,0,0.2,1), visibility 1s ease;
+            overflow: hidden;
+        }
+        #loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        #loader-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        /* Scanlines */
+        #loader::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(110,87,255,0.018) 2px,
+                rgba(110,87,255,0.018) 4px
+            );
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .loader-ui {
+            position: relative;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 44px;
+            width: 100%;
+            padding: 0 24px;
+        }
+
+        /* HUD corners */
+        .hud { position: absolute; z-index: 4; }
+        .hud-tl { top: 28px; left: 28px; }
+        .hud-tr { top: 28px; right: 28px; }
+        .hud-bl { bottom: 28px; left: 28px; }
+        .hud-br { bottom: 28px; right: 28px; }
+        .hud svg { width: 44px; height: 44px; opacity: 0.5; }
+
+        /* Spinner */
+        .l-spinner {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            filter: drop-shadow(0 0 24px rgba(110,87,255,0.6));
+        }
+        .l-spinner svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+        .l-arc1 {
+            fill: none; stroke: #6E57FF; stroke-width: 2.5; stroke-linecap: round;
+            stroke-dasharray: 80 180;
+            transform-origin: 80px 80px;
+            animation: spinCW 1.8s cubic-bezier(0.4,0,0.2,1) infinite;
+            filter: drop-shadow(0 0 8px #6E57FF);
+        }
+        .l-arc2 {
+            fill: none; stroke: #699dd3; stroke-width: 1.8; stroke-linecap: round;
+            stroke-dasharray: 50 150;
+            transform-origin: 80px 80px;
+            animation: spinCCW 2.5s cubic-bezier(0.4,0,0.2,1) infinite;
+        }
+        .l-arc3 {
+            fill: none; stroke: rgba(180,160,255,0.4); stroke-width: 1; stroke-linecap: round;
+            stroke-dasharray: 25 100;
+            transform-origin: 80px 80px;
+            animation: spinCW 1.2s linear infinite;
+        }
+        .l-hex {
+            fill: rgba(110,87,255,0.07);
+            stroke: rgba(110,87,255,0.3);
+            stroke-width: 1;
+            animation: hexPulse 3s ease-in-out infinite;
+        }
+        .l-hex2 {
+            fill: none;
+            stroke: rgba(105,157,211,0.2);
+            stroke-width: 1;
+            stroke-dasharray: 4 6;
+            animation: spinCW 12s linear infinite;
+            transform-origin: 80px 80px;
+        }
+        @keyframes spinCW  { to { transform: rotate(360deg); } }
+        @keyframes spinCCW { to { transform: rotate(-360deg); } }
+        @keyframes hexPulse {
+            0%,100% { fill: rgba(110,87,255,0.05); }
+            50% { fill: rgba(110,87,255,0.18); }
+        }
+
+        .l-center-dot {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .l-center-dot::after {
+            content: '';
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, #6E57FF 60%);
+            box-shadow: 0 0 20px rgba(110,87,255,1), 0 0 50px rgba(110,87,255,0.5);
+            animation: corePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes corePulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.5); box-shadow: 0 0 30px rgba(110,87,255,1), 0 0 70px rgba(110,87,255,0.6); }
+        }
+
+        /* Name */
+        .l-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(32px, 6vw, 64px);
+            font-weight: 700;
+            letter-spacing: 14px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #4a35cc, #6E57FF, #a899ff, #699dd3, #6E57FF, #4a35cc);
+            background-size: 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: nameShimmer 3s linear infinite;
+            text-shadow: none;
+        }
+        @keyframes nameShimmer {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Tagline cycling */
+        .l-tagline {
+            font-family: 'Inter', monospace;
+            font-size: clamp(16px, 2.2vw, 22px);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: rgba(105,157,211,0.85);
+            text-align: center;
+            min-height: 20px;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Progress */
+        .l-progress-wrap { width: min(480px, 75vw); display: flex; flex-direction: column; gap: 12px; }
+        .l-progress-meta {
+            display: flex; justify-content: space-between;
+            font-family: 'Inter', monospace;
+            font-size: 10px; letter-spacing: 3px;
+            color: rgba(110,87,255,0.5);
+            text-transform: uppercase;
+        }
+        .l-track {
+            width: 100%; height: 2px;
+            background: rgba(110,87,255,0.1);
+            border-radius: 99px;
+            position: relative;
+        }
+        /* Glow trail behind bar */
+        .l-track::before {
+            content: '';
+            position: absolute;
+            inset: -4px 0;
+            border-radius: 99px;
+            background: inherit;
+            filter: blur(6px);
+            opacity: 0.4;
+        }
+        .l-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4a35cc, #6E57FF, #8b7aff, #699dd3);
+            background-size: 200%;
+            border-radius: 99px;
+            transition: width 0.08s linear;
+            animation: barShine 2s linear infinite;
+            box-shadow: 0 0 14px rgba(110,87,255,0.9), 0 0 28px rgba(110,87,255,0.4);
+            position: relative;
+        }
+        .l-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px; top: -6px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 12px rgba(110,87,255,1), 0 0 24px rgba(110,87,255,0.7), 0 0 40px rgba(110,87,255,0.3);
+        }
+        @keyframes barShine {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Status */
+        .l-status {
+            font-family: 'Inter', monospace;
+            font-size: 10px; letter-spacing: 4px;
+            color: rgba(110,87,255,0.4);
+            text-transform: uppercase;
+            text-align: center;
+            min-height: 16px;
+        }
+    </style>
+ </head>
+<body>
+
+    <!-- ── LOADER ── -->
+    <div id="loader">
+        <canvas id="loader-canvas"></canvas>
+
+        <!-- HUD corners -->
+        <div class="hud hud-tl"><svg viewBox="0 0 44 44"><polyline points="0,20 0,0 20,0" fill="none" stroke="#6E57FF" stroke-width="2"/></svg></div>
+        <div class="hud hud-tr"><svg viewBox="0 0 44 44"><polyline points="24,0 44,0 44,20" fill="none" stroke="#6E57FF" stroke-width="2"/></svg></div>
+        <div class="hud hud-bl"><svg viewBox="0 0 44 44"><polyline points="0,24 0,44 20,44" fill="none" stroke="#6E57FF" stroke-width="2"/></svg></div>
+        <div class="hud hud-br"><svg viewBox="0 0 44 44"><polyline points="24,44 44,44 44,24" fill="none" stroke="#6E57FF" stroke-width="2"/></svg></div>
+
+        <div class="loader-ui">
+            <div class="l-spinner">
+                <svg viewBox="0 0 160 160">
+                    <circle cx="80" cy="80" r="74" class="l-hex2"/>
+                    <polygon points="80,18 132,48 132,112 80,142 28,112 28,48" class="l-hex"/>
+                    <circle cx="80" cy="80" r="72" class="l-arc1"/>
+                    <circle cx="80" cy="80" r="56" class="l-arc2"/>
+                    <circle cx="80" cy="80" r="36" class="l-arc3"/>
+                </svg>
+                <div class="l-center-dot"></div>
+            </div>
+
+            <div class="l-name">Vaishnav</div>
+            <div class="l-tagline" id="lTagline">crafting digital experiences</div>
+
+            <div class="l-progress-wrap">
+                <div class="l-progress-meta">
+                    <span id="lStep">initializing</span>
+                    <span id="lPct">0%</span>
+                </div>
+                <div class="l-track">
+                    <div class="l-fill" id="lBar"></div>
+                </div>
+            </div>
+
+            <div class="l-status" id="lStatus">// booting system</div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const canvas = document.getElementById('loader-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const TAU = Math.PI * 2;
+
+        // Floating cubes
+        function rRect(x,y,w,h,r) {
+            const rad = Math.min(r,w/2,h/2);
+            ctx.beginPath();
+            ctx.moveTo(x+rad,y); ctx.lineTo(x+w-rad,y);
+            ctx.quadraticCurveTo(x+w,y,x+w,y+rad);
+            ctx.lineTo(x+w,y+h-rad);
+            ctx.quadraticCurveTo(x+w,y+h,x+w-rad,y+h);
+            ctx.lineTo(x+rad,y+h);
+            ctx.quadraticCurveTo(x,y+h,x,y+h-rad);
+            ctx.lineTo(x,y+rad);
+            ctx.quadraticCurveTo(x,y,x+rad,y);
+            ctx.closePath();
+        }
+
+        const cubes = Array.from({length: 22}, (_, i) => ({
+            x: Math.random() * (i < 11 ? W * 0.38 : W * 0.38 + W * 0.24) + (i >= 11 ? W * 0.38 : 0),
+            y: H + Math.random() * H * 1.2,
+            size: 22 + Math.random() * 32,
+            speed: 14 + Math.random() * 22,
+            angle: Math.random() * TAU,
+            rot: (Math.random() - 0.5) * 0.7,
+            alpha: 0.15 + Math.random() * 0.25,
+            hue: Math.random() > 0.5 ? '110,87,255' : '105,157,211',
+        }));
+
+        // Particles
+        const pts = Array.from({length: 60}, () => ({
+            x: Math.random() * W, y: Math.random() * H,
+            vx: (Math.random()-.5)*0.25, vy: (Math.random()-.5)*0.25,
+            r: Math.random() * 1.4 + 0.3,
+            col: Math.random() > 0.5 ? '110,87,255' : '105,157,211',
+        }));
+
+        // Horizontal glitch lines
+        const glitchLines = Array.from({length: 6}, () => ({
+            y: Math.random() * H,
+            width: 40 + Math.random() * 120,
+            x: Math.random() * W,
+            speed: (Math.random()-.5) * 1.2,
+            alpha: 0.2 + Math.random() * 0.3,
+            col: Math.random() > 0.5 ? '110,87,255' : '105,157,211',
+        }));
+
+        let last = 0, scanY = 0;
+
+        function frame(t) {
+            const dt = Math.min((t - last)/16.67, 3);
+            last = t;
+            ctx.clearRect(0, 0, W, H);
+
+            // Dark bg with subtle purple center glow
+            ctx.fillStyle = '#0a0812';
+            ctx.fillRect(0, 0, W, H);
+
+            const cg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.6);
+            cg.addColorStop(0, 'rgba(110,87,255,0.07)');
+            cg.addColorStop(0.5, 'rgba(105,157,211,0.03)');
+            cg.addColorStop(1, 'transparent');
+            ctx.fillStyle = cg;
+            ctx.fillRect(0, 0, W, H);
+
+            // Scan beam
+            scanY = (scanY + 0.5 * dt) % H;
+            const sg = ctx.createLinearGradient(0, scanY-40, 0, scanY+40);
+            sg.addColorStop(0,'transparent');
+            sg.addColorStop(0.5,'rgba(110,87,255,0.04)');
+            sg.addColorStop(1,'transparent');
+            ctx.fillStyle = sg;
+            ctx.fillRect(0, scanY-40, W, 80);
+
+            // Glitch lines (sides)
+            glitchLines.forEach(g => {
+                g.x += g.speed * dt;
+                if (g.x > W + g.width) g.x = -g.width;
+                if (g.x < -g.width) g.x = W + g.width;
+                ctx.fillStyle = `rgba(${g.col},${g.alpha})`;
+                ctx.fillRect(g.x, g.y, g.width, 1);
+            });
+
+            // Constellation
+            pts.forEach(p => {
+                p.x += p.vx*dt; p.y += p.vy*dt;
+                if (p.x<0) p.x=W; if (p.x>W) p.x=0;
+                if (p.y<0) p.y=H; if (p.y>H) p.y=0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, TAU);
+                ctx.fillStyle = `rgba(${p.col},0.6)`;
+                ctx.fill();
+            });
+            for (let i=0;i<pts.length;i++) for (let j=i+1;j<pts.length;j++) {
+                const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+                const d=Math.sqrt(dx*dx+dy*dy);
+                if (d<100) {
+                    ctx.beginPath();
+                    ctx.moveTo(pts[i].x,pts[i].y);
+                    ctx.lineTo(pts[j].x,pts[j].y);
+                    ctx.strokeStyle=`rgba(110,87,255,${(1-d/100)*0.2})`;
+                    ctx.lineWidth=0.5;
+                    ctx.stroke();
+                }
+            }
+
+            // Cubes
+            cubes.forEach(c => {
+                c.y -= c.speed * dt * 0.016;
+                c.angle += c.rot * dt * 0.016;
+                if (c.y < -c.size*2) { c.y = H + c.size; c.x = Math.random() * W; }
+
+                const s=c.size, r=s*0.28, dx=s*0.26, dy=-s*0.2;
+                ctx.save();
+                ctx.translate(c.x, c.y);
+                ctx.rotate(c.angle);
+                const x=-s/2, y=-s/2;
+
+                // Top face
+                ctx.beginPath();
+                ctx.moveTo(x+r,y); ctx.lineTo(x+s-r,y);
+                ctx.lineTo(x+s-r+dx,y+dy); ctx.lineTo(x+r+dx,y+dy);
+                ctx.closePath();
+                ctx.fillStyle=`rgba(${c.hue},${c.alpha*0.7})`;
+                ctx.fill();
+
+                // Right face
+                ctx.beginPath();
+                ctx.moveTo(x+s,y+r); ctx.lineTo(x+s+dx,y+r+dy);
+                ctx.lineTo(x+s+dx,y+s-r+dy); ctx.lineTo(x+s,y+s-r);
+                ctx.closePath();
+                ctx.fillStyle=`rgba(${c.hue},${c.alpha*0.5})`;
+                ctx.fill();
+
+                // Front
+                rRect(x,y,s,s,r);
+                ctx.fillStyle=`rgba(${c.hue},${c.alpha})`;
+                ctx.fill();
+                ctx.strokeStyle=`rgba(${c.hue},${c.alpha*1.5})`;
+                ctx.lineWidth=0.8;
+                ctx.stroke();
+
+                // Shine
+                const sh=ctx.createLinearGradient(x,y,x+s*0.5,y+s*0.5);
+                sh.addColorStop(0,`rgba(255,255,255,${c.alpha*0.6})`);
+                sh.addColorStop(1,'rgba(255,255,255,0)');
+                rRect(x,y,s,s,r);
+                ctx.fillStyle=sh;
+                ctx.fill();
+
+                ctx.restore();
+            });
+
+            // Vignette
+            const vig=ctx.createRadialGradient(W/2,H/2,H*0.25,W/2,H/2,H*0.9);
+            vig.addColorStop(0,'transparent');
+            vig.addColorStop(1,'rgba(5,3,14,0.82)');
+            ctx.fillStyle=vig;
+            ctx.fillRect(0,0,W,H);
+
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+
+        // Cycling tech taglines
+        const tagEl = document.getElementById('lTagline');
+        tagEl.style.whiteSpace = 'pre';
+        tagEl.style.fontFamily = "'Inter', monospace";
+        tagEl.style.textAlign = 'center';
+        tagEl.style.position = 'relative';
+
+        const sequence = [
+            { text: "404: boring portfolio not found", hold: 400 },
+            { text: "npm install awesomeness", hold: 400 },
+            { text: "while(alive) {\n  eat();\n  code();\n  repeat();  }", hold: 700 },
+            { text: "caffeine.load() → creativity.execute()", hold: 400 },
+            { text: "git commit -m 'first impression'", hold: 400 },
+        ];
+
+        const TYPE_SPEED = 20;
+        let seqIdx = 0;
+
+        function typeText(text, cb) {
+            let i = 0;
+            tagEl.style.transition = 'none';
+            tagEl.style.transform = 'translateY(0px)';
+            tagEl.style.opacity = '1';
+            tagEl.textContent = '';
+            function type() {
+                if (i <= text.length) {
+                    tagEl.textContent = text.slice(0, i++);
+                    setTimeout(type, TYPE_SPEED);
+                } else { cb(); }
+            }
+            type();
+        }
+
+        function floatUp(cb) {
+            tagEl.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+            tagEl.style.transform = 'translateY(-32px)';
+            tagEl.style.opacity = '0';
+            setTimeout(() => {
+                tagEl.textContent = '';
+                tagEl.style.transition = 'none';
+                tagEl.style.transform = 'translateY(0px)';
+                cb();
+            }, 160);
+        }
+
+        function runNext() {
+            if (seqIdx >= sequence.length) {
+                setTimeout(() => loader.classList.add("hide"), 200);
+                return;
+            }
+            const item = sequence[seqIdx++];
+            typeText(item.text, () => {
+                setTimeout(() => floatUp(() => setTimeout(runNext, 100)), item.hold);
+            });
+        }
+
+        runNext();
+
+        // Progress
+        const steps    = ["initializing", "loading assets", "compiling ui", "almost done", "launching"];
+        const statuses = ["// booting system", "// loading assets", "// rendering interface", "// finalizing", "// launching portfolio"];
+        const bar=document.getElementById("lBar"), pct=document.getElementById("lPct");
+        const stepEl=document.getElementById("lStep"), status=document.getElementById("lStatus");
+        const loader=document.getElementById("loader");
+
+        const duration=7000, start=performance.now();
+        function tick(now) {
+            const p=Math.min((now-start)/duration*100,100);
+            bar.style.width=p+"%";
+            pct.textContent=Math.floor(p)+"%";
+            const si=Math.min(Math.floor(p/20),steps.length-1);
+            stepEl.textContent=steps[si];
+            status.textContent=statuses[si];
+            p<100 ? requestAnimationFrame(tick) : setTimeout(()=>loader.classList.add("hide"),500);
+        }
+        requestAnimationFrame(tick);
+    })();
+    </script>
+        <canvas id="bg-canvas"></canvas>
+        <nav>
+            <div class="navbar">
+                <div class="logo">
+                    <img src="/assets/logo.png" alt="">
+                </div>
+                <ul class="nav-links">
+                    <li onclick="location.href='#main-sec'">home</li>
+                    <li onclick="location.href='#about-sec'">about me</li>
+                    <li onclick="location.href='#skill-sec'">skills</li>
+                    <li onclick="location.href='#projects'">projects</li>
+                    <li onclick="location.href='#contacts'">contact</li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <img src="/assets/moon-icon.png" id="themeIcon" alt="theme">
+                </button>
+                <div class="hamburger" onclick="toggleMenu()">
+                    &#9776; <!-- Unicode for the hamburger icon -->
+                </div>
+            </div>
+        </nav>
+    <div class="whole">
+        <div id="main-sec" class="main-section">
+            <div class="profile">
+                <img src="/assets/profile-pic.jpg" alt="">
+            </div>
+            <div class="text">
+                <h1>Hi, I'm Vaishnav! </h1>
+                <h3>I am a <span class="typewriter-text"></span></h3>
+                
+                <p>I specialize in Java-based web applications, blending front-end aesthetics with back-end efficiency. Passionate about creating intuitive UI/UX designs and building scalable full-stack solutions. Always exploring new tech to enhance user experiences.</p>
+                <div class="main-sec-btn">
+                    <button class="btn1" onclick="window.open('/assets/Vaishnav_Resume.pdf', '_blank')">see my work</button>
+                    <button class="btn2" onclick="location.href='#contacts'">lets connect</button>
+                </div>
+            </div>
+        </div>
+        <div id="about-sec" class="about-sec">
+            <h1 class="heading">about me:</h1>
+            <h3>qualification:</h3>
+            <p>Currently pursuing <strong>B.tech in Computer Science</strong>, with a strong foundation in Java, web development, and UI/UX design.</p>
+            <h3>key interests:</h3>
+            <li> Full-Stack Web Development – Building scalable applications with Java & JavaScript.</li>
+            <li> UI/UX Design – Crafting user-friendly interfaces using Figma and CSS.</li>
+            <li> Hackathons & Coding Challenges – Enjoy solving real-world problems through tech.</li>
+            <li> Continuous Learning – Exploring new frameworks, tools, and industry trends.</li>
+            <li> Always eager to innovate, collaborate, and build impactful solutions!</li>
+        </div>
+        <div id="skill-sec" class="skill-sec">
+            <h1 class="heading">programming languages known:</h1>
+            <div class="skills">
+                <div class="skill-img">
+                    <img src="/assets/C_Logo.png" alt="">
+                </div>
+                <div class="skill-img">
+                    <img src="/assets/python_logo.png" alt="">
+                </div>
+                <div class="skill-img">
+                    <img src="/assets/java_logo.png" alt="">
+                </div>
+                <div class="skill-img">
+                    <img src="/assets/html_logo.png" alt="">
+                </div>
+                <div class="skill-img">
+                    <img src="/assets/css_logo.png" alt="">
+                </div>
+                <div class="skill-img">
+                    <img src="/assets/JavaScript_logo.png" alt="">
+                </div>
+            </div>
+        </div>
+        <div id="projects" class="project-sec">
+            <h1 class="heading">projects:</h1>
+            <div class="projects">
+                <div class="project1">
+                    <h1>Medication Reminder</h1>
+                    <p>An Web Application which takes time of medication of patients and an alarm is ringed</p>
+                </div>
+                <div class="project2">
+                    <h1>Innovation Excellence Indicators</h1>
+                    <p>An Web Application based on Innovation Excellence Indicators in an Institute or University</p>
+                </div>
+            </div>
+        </div>
+        <div id="cert-sec" class="certification-sec">
+            <h1 class="heading">certifications:</h1>
+            <div class="certifications">
+                <div class="cert1">
+                    <p class="title">The Complete Full-Stack Web Development Bootcamp (Udemy)</p>
+                    
+                </div>
+                <div class="cert2">
+                    <p>
+                        DSA in Java Programming (Udemy)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div id="contacts" class="contact-sec">
+            <h1 class="heading">contact:</h1>
+            <div class="contact">
+                
+                    <form id="contactForm">
+                    <label for="name"><h3>name:</h3></label>
+                    <input type="text" id="name" placeholder="Enter your Name" required>
+                    <label for="email"><h3>email:</h3></label>
+                    <input type="email" id="email" placeholder="Enter your Email" required>
+                    <label for="message"><h3>your message:</h3></label>
+                    <textarea id="message" placeholder="Enter your message" required></textarea>
+                    <div class="c-btn">
+                        <button type="submit" class="contact-btn">send your message</button>
+                    </div>
+                    </form>
+                    
+                
+                <div class="contact-img">
+                   <img src="/assets/contact-nobg.png" alt="">
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="footer">
+        <p>© 2025 Oruganti Vaishnav. All Rights Reserved.</p>
+        <div class="social-link">
+            <a href="https://instagram.com/vaishnav_conqueror" target="_blank">
+                <img class="instagram f-icon" src="/assets/instagram.png" alt="">
+            </a>
+            <a href="https://www.linkedin.com/in/vaishnav17" target="_blank">
+                <img class="linkedin f-icon" src="/assets/linkedin.png" alt="">
+            </a>
+            <a href="https://github.com/codewithvaishnav" target="_blank">
+                <img class="github f-icon" src="../assets/github.svg" alt="">
+            </a>
+        </div>
+    </div>
+    <div id="msgBar" class="msg-bar">
+  <span>Message Sent ✅</span>
+  <div class="progress"></div>
+</div>
+    <script>
+function showMessageBar() {
+    const bar = document.getElementById("msgBar");
+    bar.classList.add("show");
+
+    setTimeout(() => {
+        bar.classList.remove("show");
+    }, 3000);
+}
+
+        const roles = ["Frontend Developer", "UI/UX Designer", "Python Developer", "Tech Enthusiast"];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = contactForm.querySelector('.contact-btn');
+
+    contactForm.addEventListener('submit', async (e) => {
+        // This is the line that stops the page from refreshing/adding '?' to URL
+        e.preventDefault();
+
+        // Change button text so you know it's working
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        submitBtn.disabled = true;
+
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            message: document.getElementById('message').value
+        };
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                showMessageBar();
+                // alert('✅ Message saved to MongoDB!');
+                contactForm.reset();
+            } else {
+                alert('❌ Server error.Website is under Maintenance.');
+            }
+        } catch (err) {
+            alert("❌ Connection failed. Is 'node server.js' running?");
+        } finally {
+            submitBtn.textContent = originalBtnText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ... (Keep your existing typewriter and theme toggle functions here) ...
+
+
+        function typeWriterEffect() {
+            const typewriterElement = document.querySelector(".typewriter-text");
+            const currentRole = roles[roleIndex];
+
+            if (isDeleting) {
+                typewriterElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typewriterElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let speed = isDeleting ? 100 : 150; // Faster deleting
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                speed = 2000; // Pause before deleting
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                speed = 300; // Pause before typing new role
+            }
+
+            setTimeout(typeWriterEffect, speed);
+        }
+
+        typeWriterEffect();
+
+        function toggleMenu() {
+            document.querySelector(".nav-links").classList.toggle("active");
+        }
+
+        function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+
+    document.documentElement.setAttribute('data-theme', newTheme);
+
+    const icon = document.getElementById('themeIcon');
+    icon.src = newTheme === 'dark' 
+        ? '/assets/sun-icon.png'   // dark mode → show sun
+        : '/assets/moon-icon.png'; // light mode → show moon
+
+    localStorage.setItem('theme', newTheme);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const icon = document.getElementById('themeIcon');
+    icon.src = savedTheme === 'dark'
+        ? '/assets/sun-icon.png'
+        : '/assets/moon-icon.png';
+});
+
+        // Apply saved theme on load
+        (function() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            if (saved === 'dark') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('themeToggle');
+                    if (btn) btn.querySelector('.theme-icon').textContent = '☀️';
+                });
+            }
+        })();
+        
+        // Close menu when clicking on a nav link
+        document.querySelectorAll(".nav-links li").forEach(link => {
+            link.addEventListener("click", function() {
+                if (window.innerWidth <= 768) {
+                    document.querySelector(".nav-links").classList.remove("active");
+                }
+            });
+        });
+
+        // Canvas-based tech background with floating skill-logo cubes
+        (function () {
+            const canvas = document.getElementById("bg-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+
+            // helper: rounded rectangle path
+            function roundedRectPath(x, y, w, h, r) {
+                const radius = Math.min(r, w / 2, h / 2);
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + w - radius, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+                ctx.lineTo(x + w, y + h - radius);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+                ctx.lineTo(x + radius, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+            }
+
+            let width = 0;
+            let height = 0;
+            let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            window.addEventListener("resize", resize);
+            resize();
+
+            // Load skill logo images (original flat logos for all cubes)
+            const skillSrcs = [
+                "/assets/C_Logo.png",
+                "/assets/python_logo.png",
+                "/assets/java_logo.png",
+                "/assets/html_logo.png",
+                "/assets/css_logo.png",
+                "/assets/JavaScript_logo.png"
+            ];
+
+            const skillImages = [];
+            let imagesLoaded = 0;
+
+            skillSrcs.forEach((src) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    imagesLoaded++;
+                };
+                skillImages.push(img);
+            });
+
+            // Cube field
+            const cubes = [];
+            const CUBE_COUNT = 20; // slightly fewer cubes for clarity
+            const edges = []; // persistent edges so lines don't flicker
+
+            function lerp(a, b, t) { return a + (b - a) * t; }
+
+            function resetCube(cube, index) {
+                const depth = Math.random(); // 0 (far) -> 1 (near)
+                const sizeBase = Math.min(width, height) * 0.032;
+                cube.depth = depth;
+
+                // Evenly distribute cubes in a grid, with small randomness and small outer margin
+                const cols = Math.ceil(Math.sqrt(CUBE_COUNT));
+                const rows = Math.ceil(CUBE_COUNT / cols);
+
+                const marginX = width * 0.06;
+                const marginY = height * 0.08;
+                const innerWidth = Math.max(1, width - marginX * 2);
+                const innerHeight = Math.max(1, height - marginY * 2);
+
+                const spacingX = cols > 1 ? innerWidth / (cols - 1) : 0;
+                const spacingY = rows > 1 ? innerHeight / (rows - 1) : 0;
+
+                const col = index % cols;
+                const row = Math.floor(index / cols);
+
+                const baseX = marginX + spacingX * col;
+                const baseY = marginY + spacingY * row;
+
+                // Store permanent jitter and grid position for consistent wrapping
+                cube.jitterX = (Math.random() - 0.5) * spacingX * 0.3; // ±15% of spacing
+                cube.jitterY = (Math.random() - 0.5) * spacingY * 0.3;
+                cube.gridCol = col;
+                cube.gridRow = row;
+
+                cube.baseX = baseX + cube.jitterX;
+                cube.baseY = baseY + cube.jitterY;
+
+                cube.size = sizeBase * (0.65 + depth * 0.85);
+                cube.speedY = 10 + depth * 22;
+                cube.speedRot = (0.5 + depth * 1.2) * (index % 2 === 0 ? 1 : -1);
+                cube.angle = Math.random() * Math.PI * 2;
+                cube.img = null;
+                cube.rx = cube.baseX;
+                cube.ry = cube.baseY;
+            }
+
+            for (let i = 0; i < CUBE_COUNT; i++) {
+                const cube = {};
+                resetCube(cube, i);
+                cubes.push(cube);
+            }
+
+            // Build a connected graph once (degrees 1..4), using initial base positions
+            function buildEdges() {
+                edges.length = 0;
+                const degrees = new Array(cubes.length).fill(0);
+
+                function hasEdge(i, j) {
+                    return edges.some(
+                        (e) => (e.i === i && e.j === j) || (e.i === j && e.j === i)
+                    );
+                }
+
+                const validIndices = [];
+                for (let i = 0; i < cubes.length; i++) {
+                    if (!Number.isFinite(cubes[i].baseX) || !Number.isFinite(cubes[i].baseY)) {
+                        continue;
+                    }
+                    validIndices.push(i);
+                }
+                if (validIndices.length < 2) return;
+
+                // 1) Spanning tree for connectivity
+                for (let k = 1; k < validIndices.length; k++) {
+                    const i = validIndices[k];
+                    const possible = validIndices
+                        .slice(0, k)
+                        .filter((idx) => degrees[idx] < 4);
+                    const j =
+                        possible.length > 0
+                            ? possible[Math.floor(Math.random() * possible.length)]
+                            : validIndices[Math.floor(Math.random() * k)];
+                    edges.push({ i, j });
+                    degrees[i]++;
+                    degrees[j]++;
+                }
+
+                // 2) Extra edges up to degree 4
+                const allPairs = [];
+                for (let a = 0; a < cubes.length; a++) {
+                    for (let b = a + 1; b < cubes.length; b++) {
+                        allPairs.push({ i: a, j: b });
+                    }
+                }
+                for (let k = allPairs.length - 1; k > 0; k--) {
+                    const r = Math.floor(Math.random() * (k + 1));
+                    [allPairs[k], allPairs[r]] = [allPairs[r], allPairs[k]];
+                }
+                for (const { i, j } of allPairs) {
+                    if (degrees[i] >= 4 || degrees[j] >= 4) continue;
+                    if (hasEdge(i, j)) continue;
+                    edges.push({ i, j });
+                    degrees[i]++;
+                    degrees[j]++;
+                }
+            }
+
+            buildEdges();
+
+            // Assign logos ensuring neighbors don't have the same logo
+            function assignLogos() {
+                if (skillImages.length === 0) return;
+
+                // Build neighbor map from edges
+                const neighbors = new Array(cubes.length).fill(null).map(() => []);
+                for (const { i, j } of edges) {
+                    neighbors[i].push(j);
+                    neighbors[j].push(i);
+                }
+
+                // Assign logos avoiding duplicates with neighbors
+                for (let i = 0; i < cubes.length; i++) {
+                    const usedLogos = new Set();
+                    // Collect logos used by neighbors
+                    for (const neighborIdx of neighbors[i]) {
+                        if (cubes[neighborIdx].img) {
+                            usedLogos.add(cubes[neighborIdx].img);
+                        }
+                    }
+
+                    // Find available logos (not used by neighbors)
+                    const available = skillImages.filter((img) => !usedLogos.has(img));
+                    // If all logos are used by neighbors, use any logo
+                    const logoPool = available.length > 0 ? available : skillImages;
+                    cubes[i].img = logoPool[Math.floor(Math.random() * logoPool.length)];
+                }
+            }
+
+            assignLogos();
+
+            let mouseX = width / 2;
+            let mouseY = height / 3;
+            window.addEventListener(
+                "mousemove",
+                (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                },
+                { passive: true }
+            );
+
+            let lastTime = 0;
+
+            function drawFrame(time) {
+                const delta = Math.min((time - lastTime) / 1000, 0.05) || 0;
+                lastTime = time;
+
+                ctx.clearRect(0, 0, width, height);
+
+                // ambient gradient wash (keep subtle for readability)
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+                if (isDark) {
+                    bgGrad.addColorStop(0, "rgba(14, 11, 26, 0.97)");
+                    bgGrad.addColorStop(0.5, "rgba(19, 16, 42, 0.98)");
+                    bgGrad.addColorStop(1, "rgba(12, 18, 32, 0.97)");
+                } else {
+                    bgGrad.addColorStop(0, "rgba(238, 243, 255, 0.96)");
+                    bgGrad.addColorStop(0.5, "rgba(245, 239, 255, 0.98)");
+                    bgGrad.addColorStop(1, "rgba(231, 243, 255, 0.96)");
+                }
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, width, height);
+
+                // update & draw cubes
+                const maxLinkDist = Math.min(width, height) * 0.25;
+                const maxLinkDistSq = maxLinkDist * maxLinkDist;
+
+                // Local mouse influence radius
+                const influenceRadius = Math.min(width, height) * 0.22;
+
+                cubes.forEach((cube, index) => {
+                    cube.baseY -= cube.speedY * delta * 0.6;
+                    cube.angle += cube.speedRot * delta * 0.5;
+
+                    if (cube.baseY < -maxLinkDist) {
+                        const cols = Math.ceil(Math.sqrt(CUBE_COUNT));
+                        const rows = Math.ceil(CUBE_COUNT / cols);
+                        const marginX = width * 0.06;
+                        const marginY = height * 0.08;
+                        const innerWidth = Math.max(1, width - marginX * 2);
+                        const innerHeight = Math.max(1, height - marginY * 2);
+                        const spacingX = cols > 1 ? innerWidth / (cols - 1) : 0;
+                        const spacingY = rows > 1 ? innerHeight / (rows - 1) : 0;
+
+                        const col = cube.gridCol !== undefined ? cube.gridCol : (index % cols);
+                        const baseX = marginX + spacingX * col;
+
+                        cube.baseX = baseX + (cube.jitterX || 0);
+                        cube.baseY = height + maxLinkDist;
+                        // Reset lerp positions so cube doesn't visually jump
+                        cube.rx = cube.baseX;
+                        cube.ry = cube.baseY;
+                    }
+
+                    // Distance from mouse to this cube's base position
+                    const dx = cube.baseX - mouseX;
+                    const dy = cube.baseY - mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    // Smooth falloff: 1 when cube is at mouse, 0 when outside influence radius
+                    const influence = Math.max(0, 1 - dist / influenceRadius);
+                    const smoothInfluence = influence * influence * (3 - 2 * influence); // smoothstep
+
+                    // Push cube away from mouse locally
+                    const pushStrength = (30 + cube.depth * 50) * smoothInfluence;
+                    const pushAngle = Math.atan2(dy, dx);
+                    const targetX = cube.baseX + Math.cos(pushAngle) * pushStrength;
+                    const targetY = cube.baseY + Math.sin(pushAngle) * pushStrength;
+
+                    // Lerp toward target for buttery smoothness
+                    const lerpSpeed = 0.06;
+                    cube.rx = lerp(cube.rx ?? cube.baseX, targetX, lerpSpeed);
+                    cube.ry = lerp(cube.ry ?? cube.baseY, targetY, lerpSpeed);
+
+                    cube.sx = cube.rx;
+                    cube.sy = cube.ry;
+                });
+
+                // draw connecting lines first (under cubes), using persistent edges to avoid flicker
+                ctx.lineWidth = 2; // slightly thicker for better visibility
+                ctx.globalCompositeOperation = "source-over";
+
+                for (const { i, j } of edges) {
+                    const a = cubes[i];
+                    const b = cubes[j];
+                    const ax = a.sx;
+                    const ay = a.sy;
+                    const bx = b.sx;
+                    const by = b.sy;
+                    if (ax == null || ay == null || bx == null || by == null) continue;
+
+                    const dx = ax - bx;
+                    const dy = ay - by;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (!dist || !isFinite(dist)) continue;
+
+                    const maxDist = Math.min(width, height);
+                    const t = Math.max(0, Math.min(1, 1 - dist / maxDist));
+                    const alpha = 0.3 + t * 0.5; // increased contrast for better visibility
+
+                    // brighter white/blue line style with more contrast
+                    ctx.strokeStyle = `rgba(200, 215, 255, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.moveTo(ax, ay);
+                    ctx.lineTo(bx, by);
+                    ctx.stroke();
+                }
+
+                // draw 3D glass cubes on top – top + side + front with logo
+                ctx.globalCompositeOperation = "source-over";
+                cubes.forEach((cube) => {
+                    if (!cube.sx || !cube.sy) return;
+                    const size = cube.size;
+                    const angle = cube.angle;
+
+                    ctx.save();
+                    ctx.translate(cube.sx, cube.sy);
+                    ctx.rotate(angle * 0.45); // gentle rotation
+
+                    // base cube metrics
+                    const frontSize = size;
+                    const depthOffset = size * 0.34;
+                    const frontX = -frontSize / 2;
+                    const frontY = -frontSize / 2;
+
+                    const topLeftX = frontX;
+                    const topLeftY = frontY;
+                    const topRightX = frontX + frontSize;
+                    const topRightY = frontY;
+                    const backTopLeftX = topLeftX + depthOffset;
+                    const backTopLeftY = topLeftY - depthOffset;
+                    const backTopRightX = topRightX + depthOffset;
+                    const backTopRightY = topRightY - depthOffset;
+
+                    const bottomLeftX = frontX;
+                    const bottomLeftY = frontY + frontSize;
+                    const bottomRightX = frontX + frontSize;
+                    const bottomRightY = frontY + frontSize;
+                    const backBottomRightX = bottomRightX + depthOffset;
+                    const backBottomRightY = bottomRightY - depthOffset;
+
+                    // colors
+                    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                    const topLight = isDarkMode ? "rgba(140, 120, 255, 0.25)" : "rgba(252, 251, 255, 0.98)";
+                    const topDark  = isDarkMode ? "rgba(100, 80, 220, 0.18)"  : "rgba(214, 205, 255, 0.92)";
+                    const sideLight = isDarkMode ? "rgba(110, 90, 240, 0.20)" : "rgba(234, 227, 255, 0.96)";
+                    const sideDark  = isDarkMode ? "rgba(80, 60, 200, 0.14)"  : "rgba(184, 168, 246, 0.88)";
+                    const frontBase = isDarkMode ? "rgba(130, 110, 255, 0.12)" : "rgba(238, 233, 255, 0.97)";
+
+                    // TOP FACE
+                    const topGrad = ctx.createLinearGradient(
+                        backTopLeftX,
+                        backTopLeftY,
+                        topLeftX,
+                        topLeftY
+                    );
+                    topGrad.addColorStop(0, topDark);
+                    topGrad.addColorStop(1, topLight);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(backTopLeftX, backTopLeftY);
+                    ctx.lineTo(backTopRightX, backTopRightY);
+                    ctx.lineTo(topRightX, topRightY);
+                    ctx.lineTo(topLeftX, topLeftY);
+                    ctx.closePath();
+                    ctx.fillStyle = topGrad;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // SIDE FACE (right)
+                    const sideGrad = ctx.createLinearGradient(
+                        topRightX,
+                        topRightY,
+                        backBottomRightX,
+                        backBottomRightY
+                    );
+                    sideGrad.addColorStop(0, sideLight);
+                    sideGrad.addColorStop(1, sideDark);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(topRightX, topRightY);
+                    ctx.lineTo(backTopRightX, backTopRightY);
+                    ctx.lineTo(backBottomRightX, backBottomRightY);
+                    ctx.lineTo(bottomRightX, bottomRightY);
+                    ctx.closePath();
+                    ctx.fillStyle = sideGrad;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // FRONT FACE (extra-rounded glass front, no sharp corners)
+                    const frontGrad = ctx.createLinearGradient(
+                        frontX,
+                        frontY,
+                        frontX,
+                        frontY + frontSize
+                    );
+                    frontGrad.addColorStop(0, isDarkMode ? "rgba(160, 140, 255, 0.15)" : "rgba(249, 247, 255, 0.99)");
+                    frontGrad.addColorStop(1, frontBase);
+                    ctx.fillStyle = frontGrad;
+                    // very large radius relative to size for soft cube
+                    roundedRectPath(frontX, frontY, frontSize, frontSize, frontSize * 0.46);
+                    ctx.fill();
+
+                    // logo on the front
+                    if (cube.img && imagesLoaded === skillImages.length) {
+                        const padding = frontSize * 0.26;
+                        const imgX = frontX + padding;
+                        const imgY = frontY + padding;
+                        const imgSize = frontSize - padding * 2;
+                        ctx.save();
+                        // clip to rounded front face
+                        roundedRectPath(
+                            frontX + 2,
+                            frontY + 2,
+                            frontSize - 4,
+                            frontSize - 4,
+                            frontSize * 0.40
+                        );
+                        ctx.clip();
+                        ctx.drawImage(cube.img, imgX, imgY, imgSize, imgSize);
+
+                        // glass highlight overlay
+                        const glassGrad = ctx.createLinearGradient(
+                            frontX,
+                            frontY,
+                            frontX,
+                            frontY + frontSize
+                        );
+                        glassGrad.addColorStop(0, "rgba(255, 255, 255, 0.6)");
+                        glassGrad.addColorStop(0.4, "rgba(255, 255, 255, 0.2)");
+                        glassGrad.addColorStop(1, "rgba(180, 170, 255, 0.28)");
+                        ctx.fillStyle = glassGrad;
+                        roundedRectPath(frontX, frontY, frontSize, frontSize, frontSize * 0.32);
+                        ctx.fill();
+
+                        ctx.restore();
+                    }
+
+                    ctx.restore();
+                });
+
+                ctx.globalCompositeOperation = "source-over";
+                requestAnimationFrame(drawFrame);
+            }
+
+            requestAnimationFrame(drawFrame);
+        })();
+    </script>
+</body>
+</html>
