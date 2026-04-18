@@ -1,16 +1,6 @@
 {
   "rewrites": [
-    { 
-      "source": "/", 
-      "destination": "/public/frontend/index.html" 
-    },
-    { 
-      "source": "/api/(.*)", 
-      "destination": "/api/index.js" 
-    },
-    { 
-      "source": "/(.*)", 
-      "destination": "/public/frontend/$1" 
-    }
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/public/frontend/$1" }
   ]
 }
