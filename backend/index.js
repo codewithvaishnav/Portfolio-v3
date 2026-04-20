@@ -9,9 +9,9 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..','public', 'frontend')));
-app.use('/assets', express.static(path.join(__dirname, '..', 'public','assets')));
-console.log('ASSETS PATH:', path.join(__dirname, '..', 'public','assets'));
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use('/assets', express.static(path.join(__dirname, '..', 'frontend','assets')));
+
 
 // 1. Connection String using the .env variable
 const dbURI = process.env.MONGO_URI;
@@ -36,7 +36,7 @@ const contactSchema = new mongoose.Schema({
     
 });
 
-app.patch('/api/admin/messages/:id/done', async (req, res) => {
+app.patch('/backend/admin/messages/:id/done', async (req, res) => {
     try {
         await Contact.findByIdAndUpdate(req.params.id, { status: 'completed' });
         res.json({ success: true });
@@ -49,11 +49,11 @@ const Contact = mongoose.model('Contact', contactSchema,'contact-form');
 
 // 3. Home Route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..','public', 'frontend', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 });
 
 // 4. API Route to save
-app.post('/api/contact', async (req, res) => {
+app.post('/backend/contact', async (req, res) => {
   // console.log("BODY RECEIVED:", req.body);
     try {
         const { name, email, message } = req.body;
@@ -71,7 +71,7 @@ app.get('/dormrp', (req, res) => {
 });
 
 // This fetches all messages from MongoDB and sends them to the page
-app.get('/api/admin/messages', async (req, res) => {
+app.get('/backend/admin/messages', async (req, res) => {
     try {
         // .sort({ _id: -1 }) puts the newest messages at the top
         const messages = await Contact.find().sort({ _id: -1 });
@@ -81,7 +81,7 @@ app.get('/api/admin/messages', async (req, res) => {
     }
 });
 
-app.delete('/api/admin/messages/:id', async (req, res) => {
+app.delete('/backend/admin/messages/:id', async (req, res) => {
     try {
         await Contact.findByIdAndDelete(req.params.id);
         res.json({ success: true });

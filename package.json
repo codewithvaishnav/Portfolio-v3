@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node api/index.js",
+    "start": "node backend/index.js",
+    "dev": "nodemon backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,5 +16,8 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "mongoose": "^9.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
