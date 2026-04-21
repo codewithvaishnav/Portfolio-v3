@@ -806,7 +806,9 @@ function showMessageBar() {
         };
 
         try {
-            const response = await fetch('https://portfolio-v3-i8hc.onrender.com/contact', {
+
+
+            const response = await fetch('https://portfolio-v3-i8hc.onrender.com/backend/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -818,6 +820,7 @@ function showMessageBar() {
                 contactForm.reset();
             } else {
                 alert('❌ Server error.Website is under Maintenance.');
+                
             }
         } catch (err) {
             alert("❌ Connection failed. Is 'node server.js' running?");
