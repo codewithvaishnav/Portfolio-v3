@@ -806,7 +806,7 @@ function showMessageBar() {
         };
 
         try {
-            const response = await fetch('/backend/contact', {
+            const response = await fetch('https://portfolio-v3-i8hc.onrender.com/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
